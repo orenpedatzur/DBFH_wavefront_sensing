@@ -124,17 +124,71 @@ end
 %% figure captures
 
 figure;tiledlayout(1,4, "TileSpacing", "compact", "Padding", "tight"); % Adjust TileSpacing and Padding
-ax1 = nexttile; imagesc(log(I_odd_e_noisy));  axis image  ij ; colorbar; colormap gray;
+ax1 = nexttile; 
+imagesc(log(I_odd_e_noisy));  axis image  ij ; colorbar; colormap gray;
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
 title('only odd');
 
 ax2 = nexttile; imagesc(log(I_even_e_noisy));  axis image  ij ; colorbar; colormap gray;
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
 title('only even');
 
 ax3 = nexttile; imagesc(log(I37_e_noisy));  axis image  ij ; colorbar; colormap gray;
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
 title('odd+even');
 
 ax4 = nexttile; imagesc(log(I37p_e_noisy));  axis image  ij ; colorbar; colormap gray;
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
 title('odd+even(+pi/2)');
+
+% insets
+scale = 3;
+inset_width = ax1.Position(3)/scale;
+inset_height = ax1.Position(4)/scale;
+inset_offset_x = ax1.Position(3)*(scale-1)/(scale);
+inset_offset_y = ax1.Position(4)*(scale-1)/(scale);
+
+ax1_inset = axes('Position',[ax1.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I_odd_e_noisy));  axis image  ij ; xticklabels();
+ax1_inset.XColor = 'w'; 
+ax1_inset.YColor = 'w'; 
+ax1_inset.FontSize = 4;
+ax1_inset.XTick = 0:500:img_res;
+ax1_inset.XTickLabelRotation = 90;
+ax1_inset.YTick = 0:500:img_res;
+
+
+ax2_inset = axes('Position',[ax2.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I_even_e_noisy));  axis image  ij ; xticklabels();
+ax2_inset.XColor = 'w'; 
+ax2_inset.YColor = 'w'; 
+ax2_inset.FontSize = 4;
+ax2_inset.XTick = 0:500:img_res;
+ax2_inset.XTickLabelRotation = 90;
+ax2_inset.YTick = 0:500:img_res;
+
+ax3_inset = axes('Position',[ax3.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I37_e_noisy));  axis image  ij ; xticklabels();
+ax3_inset.XColor = 'w'; 
+ax3_inset.YColor = 'w'; 
+ax3_inset.FontSize = 4;
+ax3_inset.XTick = 0:500:img_res;
+ax3_inset.XTickLabelRotation = 90;
+ax3_inset.YTick = 0:500:img_res;
+
+ax4_inset = axes('Position',[ax4.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I37p_e_noisy));  axis image  ij ; xticklabels();
+ax4_inset.XColor = 'w'; 
+ax4_inset.YColor = 'w'; 
+ax4_inset.FontSize = 4;
+ax4_inset.XTick = 0:500:img_res;
+ax4_inset.XTickLabelRotation = 90;
+ax4_inset.YTick = 0:500:img_res;
+
 exportgraphics(gcf,'figures\inputs_intensities_to_DBFH_all_segments.png');
 
 
