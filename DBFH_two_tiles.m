@@ -108,19 +108,73 @@ segments12p.pistons(tile_2_ind) = segments12p.pistons(tile_2_ind) + pi/2;
 hex_grid = draw_hex_grid(segments);
 
 
-figure;
+ftest = figure('Position',[100 100 1000 1100]);
 tiledlayout(3,2,'Padding','tight','TileSpacing','compact');
-nexttile; imagesc(log(I1));  axis image ij off; colormap parula; colorbar; title(['Tile ',num2str(tile_1_ind),' only']);set(gca,'FontSize',font_size);
-nexttile; imagesc(log(I2));  axis image ij off; colormap parula; colorbar; title(['Tile ',num2str(tile_2_ind),' only']);set(gca,'FontSize',font_size);
-nexttile; imagesc(log(I12)); axis image ij off; colormap parula; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped (nominal)']);set(gca,'FontSize',font_size);
-nexttile; imagesc(log(I12p));axis image ij off; colormap parula; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped, piston \pi/2 on latter']);set(gca,'FontSize',font_size);
 
-ax5 = nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap parula; colorbar; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);
-ax6 = nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap parula; colorbar; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);
+ax1 = nexttile; imagesc(log(I1));  axis image ij; colormap gray; colorbar; title(['Tile ',num2str(tile_1_ind),' only']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax1.FontSize = 12;
+
+ax2 = nexttile; imagesc(log(I2));  axis image ij; colormap gray; colorbar; title(['Tile ',num2str(tile_2_ind),' only']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax2.FontSize = 12;
+
+ax3 = nexttile; imagesc(log(I12)); axis image ij; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped (nominal)']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax3.FontSize = 12;
+
+ax4 = nexttile; imagesc(log(I12p));axis image ij; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped, piston \pi/2 on latter']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax4.FontSize = 12;
+
+ax5 = nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);
+ax6 = nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);
 
 linkaxes([ax5,ax6]);
 xlim(ax6,img_res/2+4*seg_px*[-1,1]);
 ylim(ax6,img_res/2+4*seg_px*[-1,1]);
+
+
+% insets
+scale = 3;
+inset_width = ax1.Position(3)/scale;
+inset_height = ax1.Position(4)/scale;
+inset_offset_x = ax1.Position(3)*(scale-1)/(scale);
+inset_offset_y = ax1.Position(4)*(scale-1)/(scale);
+
+ax1_inset = axes('Position',[ax1.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I1));  axis image  ij ;
+ax1_inset.FontSize = 7;
+ax1_inset.XTick = 0:500:img_res;
+ax1_inset.XTickLabelRotation = 90;
+ax1_inset.YTick = 0:500:img_res;
+
+ax2_inset = axes('Position',[ax2.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I2));  axis image  ij ;
+ax2_inset.FontSize = 7;
+ax2_inset.XTick = 0:500:img_res;
+ax2_inset.XTickLabelRotation = 90;
+ax2_inset.YTick = 0:500:img_res;
+
+ax3_inset = axes('Position',[ax3.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I12));  axis image  ij ;
+ax3_inset.FontSize = 7;
+ax3_inset.XTick = 0:500:img_res;
+ax3_inset.XTickLabelRotation = 90;
+ax3_inset.YTick = 0:500:img_res;
+
+ax4_inset = axes('Position',[ax4.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I12p));  axis image  ij ;
+ax4_inset.FontSize = 7;
+ax4_inset.XTick = 0:500:img_res;
+ax4_inset.XTickLabelRotation = 90;
+ax4_inset.YTick = 0:500:img_res;
+
+
 exportgraphics(gcf,'figures\inputs_intensities_to_DBFH_2048.png');
 
 %% prepare data for DBH (two-tile case)

@@ -153,7 +153,7 @@ inset_offset_x = ax1.Position(3)*(scale-1)/(scale);
 inset_offset_y = ax1.Position(4)*(scale-1)/(scale);
 
 ax1_inset = axes('Position',[ax1.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
-imagesc(log(I_odd_e_noisy));  axis image  ij ; xticklabels();
+imagesc(log(I_odd_e_noisy));  axis image  ij ;
 ax1_inset.XColor = 'w'; 
 ax1_inset.YColor = 'w'; 
 ax1_inset.FontSize = 4;
@@ -163,7 +163,7 @@ ax1_inset.YTick = 0:500:img_res;
 
 
 ax2_inset = axes('Position',[ax2.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
-imagesc(log(I_even_e_noisy));  axis image  ij ; xticklabels();
+imagesc(log(I_even_e_noisy));  axis image  ij ;
 ax2_inset.XColor = 'w'; 
 ax2_inset.YColor = 'w'; 
 ax2_inset.FontSize = 4;
@@ -172,7 +172,7 @@ ax2_inset.XTickLabelRotation = 90;
 ax2_inset.YTick = 0:500:img_res;
 
 ax3_inset = axes('Position',[ax3.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
-imagesc(log(I37_e_noisy));  axis image  ij ; xticklabels();
+imagesc(log(I37_e_noisy));  axis image  ij ;
 ax3_inset.XColor = 'w'; 
 ax3_inset.YColor = 'w'; 
 ax3_inset.FontSize = 4;
@@ -181,7 +181,7 @@ ax3_inset.XTickLabelRotation = 90;
 ax3_inset.YTick = 0:500:img_res;
 
 ax4_inset = axes('Position',[ax4.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
-imagesc(log(I37p_e_noisy));  axis image  ij ; xticklabels();
+imagesc(log(I37p_e_noisy));  axis image  ij ;
 ax4_inset.XColor = 'w'; 
 ax4_inset.YColor = 'w'; 
 ax4_inset.FontSize = 4;
@@ -231,9 +231,10 @@ assert(numel(bR) == 2*sys.m, 'bR must be length 2*m');
 assert(numel(x0) == 2*sys.n, 'x0 must be length 2*n');
 
 % --- Solve ---
+% lsqr
 tic;
 [xR,flag,relres,iter] = lsqr(Afun, bR, 1e-10, 1e5, [], [], x0);
-solve_time = toc;
+solve_time_lsqr = toc;
 
 % Back to complex unknown on overlap K (phasor of B in frequency domain)
 zB = xR(1:sys.n) + 1i*xR(sys.n+1:end);
