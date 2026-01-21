@@ -123,27 +123,37 @@ end
 
 %% figure captures
 
-figure;tiledlayout(1,4, "TileSpacing", "compact", "Padding", "tight"); % Adjust TileSpacing and Padding
+figure('Position',[100 100 1500 500]);
+
+tiledlayout(1,4, "TileSpacing", "compact", "Padding", "tight"); % Adjust TileSpacing and Padding
 ax1 = nexttile; 
 imagesc(log(I_odd_e_noisy));  axis image  ij ; colorbar; colormap gray;
 xlim(img_res/12*[-1,1]+img_res/2);
 ylim(img_res/12*[-1,1]+img_res/2);
 title('only odd');
+ax1.FontSize = 14;
+text(ax1.XLim(1)+range(ax1.XLim)*0.05,ax1.YLim(1)+range(ax1.YLim)*0.1,'(a)','color','w','FontSize',20);
 
 ax2 = nexttile; imagesc(log(I_even_e_noisy));  axis image  ij ; colorbar; colormap gray;
 xlim(img_res/12*[-1,1]+img_res/2);
 ylim(img_res/12*[-1,1]+img_res/2);
 title('only even');
+ax2.FontSize = 14;
+text(ax2.XLim(1)+range(ax2.XLim)*0.05,ax2.YLim(1)+range(ax2.YLim)*0.1,'(b)','color','w','FontSize',20);
 
 ax3 = nexttile; imagesc(log(I37_e_noisy));  axis image  ij ; colorbar; colormap gray;
 xlim(img_res/12*[-1,1]+img_res/2);
 ylim(img_res/12*[-1,1]+img_res/2);
 title('odd+even');
+ax3.FontSize = 14;
+text(ax3.XLim(1)+range(ax3.XLim)*0.05,ax3.YLim(1)+range(ax3.YLim)*0.1,'(c)','color','w','FontSize',20);
 
 ax4 = nexttile; imagesc(log(I37p_e_noisy));  axis image  ij ; colorbar; colormap gray;
 xlim(img_res/12*[-1,1]+img_res/2);
 ylim(img_res/12*[-1,1]+img_res/2);
-title('odd+even(+pi/2)');
+title('odd+even(+\pi/2)');
+ax4.FontSize = 14;
+text(ax4.XLim(1)+range(ax4.XLim)*0.05,ax4.YLim(1)+range(ax4.YLim)*0.1,'(d)','color','w','FontSize',20);
 
 % insets
 scale = 3;
@@ -156,7 +166,7 @@ ax1_inset = axes('Position',[ax1.Position(1:2),0,0]+[inset_offset_x,inset_offset
 imagesc(log(I_odd_e_noisy));  axis image  ij ;
 ax1_inset.XColor = 'w'; 
 ax1_inset.YColor = 'w'; 
-ax1_inset.FontSize = 4;
+ax1_inset.FontSize = 6;
 ax1_inset.XTick = 0:500:img_res;
 ax1_inset.XTickLabelRotation = 90;
 ax1_inset.YTick = 0:500:img_res;
@@ -166,7 +176,7 @@ ax2_inset = axes('Position',[ax2.Position(1:2),0,0]+[inset_offset_x,inset_offset
 imagesc(log(I_even_e_noisy));  axis image  ij ;
 ax2_inset.XColor = 'w'; 
 ax2_inset.YColor = 'w'; 
-ax2_inset.FontSize = 4;
+ax2_inset.FontSize = 6;
 ax2_inset.XTick = 0:500:img_res;
 ax2_inset.XTickLabelRotation = 90;
 ax2_inset.YTick = 0:500:img_res;
@@ -175,7 +185,7 @@ ax3_inset = axes('Position',[ax3.Position(1:2),0,0]+[inset_offset_x,inset_offset
 imagesc(log(I37_e_noisy));  axis image  ij ;
 ax3_inset.XColor = 'w'; 
 ax3_inset.YColor = 'w'; 
-ax3_inset.FontSize = 4;
+ax3_inset.FontSize = 6;
 ax3_inset.XTick = 0:500:img_res;
 ax3_inset.XTickLabelRotation = 90;
 ax3_inset.YTick = 0:500:img_res;
@@ -184,7 +194,7 @@ ax4_inset = axes('Position',[ax4.Position(1:2),0,0]+[inset_offset_x,inset_offset
 imagesc(log(I37p_e_noisy));  axis image  ij ;
 ax4_inset.XColor = 'w'; 
 ax4_inset.YColor = 'w'; 
-ax4_inset.FontSize = 4;
+ax4_inset.FontSize = 6;
 ax4_inset.XTick = 0:500:img_res;
 ax4_inset.XTickLabelRotation = 90;
 ax4_inset.YTick = 0:500:img_res;

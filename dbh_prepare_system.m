@@ -47,10 +47,15 @@ function sys = dbh_prepare_system(magA, magB, S, suppA, suppB, opts)
     % Overlap (where unknown lives)
     epsM = 1e-15;
     K = (magA > epsM) & (magB > epsM) & isfinite(S);
+    % central_fraction = 100;
+    % thrA = max(magA(round(H/2-H/central_fraction):round(H/2+H/central_fraction),round(W/2-W/central_fraction):round(W/2+W/central_fraction)),[],'all');
+    % thrB = max(magB(round(H/2-H/central_fraction):round(H/2+H/central_fraction),round(W/2-W/central_fraction):round(W/2+W/central_fraction)),[],'all');
+    % K = (magA > thrA) & (magB > thrB) & isfinite(S);
+
     nK = nnz(K);
     if nK==0, error('No frequency overlap between |A| and |B|.'); end
 
-    % Frequency weights for the two constraint blocks
+    % Amplitudes for the two constraint blocks
     W_A = S ./ max(magB, epsM);   % zB -> spectrum used for A-support constraint
     W_B = magB;                   % zB -> spectrum used for B-support constraint
 

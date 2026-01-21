@@ -1,4 +1,4 @@
-%% DBFH_two_tiles_loop_noise.m
+%% DBFH_two_tiles_loop_noise_no_steering.m
 % Four captures for double-blind holography with tiles 1 & 2:
 % 1) only tile 1,  2) only tile 2,
 % 3) tiles 1+2 overlapped using NOMINAL tilts only,
@@ -10,8 +10,8 @@ parula_with_nan_white = [1 1 1; parula(256)];
 font_size = 16;
 
 %% Parameters
-img_res = 2^11;
-seg_px  = 140;     % flat-to-flat pixels per hex TODO: why only 140 works?
+img_res = 2^9; % 2^11
+seg_px  = 140/2^3;     % flat-to-flat pixels per hex TODO: why only 140 works?
 f0_m    = 120;     % focal length [m]
 fft_res = img_res;    % PSF FFT size
 seg_flat_diam_m = 1; % mirror size [m]
@@ -48,24 +48,6 @@ set(gca,'FontSize',font_size);
 % exportgraphics(gcf,'figures\scrambled_phases.png');
 
 
-%% unstack segments
-unstack_ratio = 3.5e-5/16.4062 *f0_m*seg_px/img_res; % TODO: solve relationship between unstack_ratio and resolution & segment size
-segments = unstack_segment_tilts(segments,unstack_ratio);
-% figure;scatter( segments.tilt_x, segments.tilt_y,'filled');axis ij equal
-
-[~, ~, U37] = render_selected_tiles(segments, [1:37]);
-[~, I37]    = pupil_fft2(U37, fft_res);
-
-% fig_unstacked = figure;imagesc((I37));  axis image  ij ; colorbar; colormap gray;
-% title('scrambled and unstacked','Color','w');
-% saveas(fig_unstacked,fullfile('figures','scrambled_and_unstacked'),'png');
-
-test_numbering(fft_res,seg_px);
-hold on;
-imagesc(I37, 'AlphaData', 0.5);axis equal ij;colormap gray;
-xlim([1 img_res]);
-ylim([1 img_res]);
-
 %% ---- Capture 1: only tile 1 ----
 tile_1_ind = 3;
 [phi1, M1, U1] = render_selected_tiles(segments, tile_1_ind);
@@ -78,42 +60,90 @@ tile_2_ind = 8;
 
 %% ---- Capture 3: tiles 1 & 2 overlapped using NOMINAL tilt only ----
 % Align tile 2 spot to tile 1 spot in UNSTACKED tilt space, then re-stack.
-[segments12,tilt_x,tilt_y] = overlap_by_nominal_tilt_unstacked(segments, tile_1_ind, tile_2_ind,unstack_ratio);
-[phi12, M12, U12] = render_selected_tiles(segments12, [tile_1_ind tile_2_ind]);
+[phi12, M12, U12] = render_selected_tiles(segments, [tile_1_ind tile_2_ind]);
 [~, I12]     = pupil_fft2(U12, fft_res);
 
 %% ---- Capture 4: tiles 1 & 2 overlapped + piston pi/2 on tile 2 ----
-segments12p         = segments12;
-segments12p.pistons(tile_2_ind) = segments12p.pistons(tile_2_ind) + pi/2;
-[phi12p, M12p, U12p] = render_selected_tiles(segments12p, [tile_1_ind tile_2_ind]);
+segments_pi2         = segments;
+segments_pi2.pistons(tile_2_ind) = segments_pi2.pistons(tile_2_ind) + pi/2;
+[phi12p, M12p, U12p] = render_selected_tiles(segments_pi2, [tile_1_ind tile_2_ind]);
 [~, I12p]      = pupil_fft2(U12p, fft_res);
 
 %% Display (optional)
 hex_grid = draw_hex_grid(segments);
 
 
-figure;
+ftest = figure('Position',[100 100 1000 1100]);
 tiledlayout(3,2,'Padding','tight','TileSpacing','compact');
-nexttile; imagesc(log(I1));  axis image ij off; colormap parula; colorbar; title(['Tile ',num2str(tile_1_ind),' only']);set(gca,'FontSize',font_size);
-nexttile; imagesc(log(I2));  axis image ij off; colormap parula; colorbar; title(['Tile ',num2str(tile_2_ind),' only']);set(gca,'FontSize',font_size);
-nexttile; imagesc(log(I12)); axis image ij off; colormap parula; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped (nominal)']);set(gca,'FontSize',font_size);
-nexttile; imagesc(log(I12p));axis image ij off; colormap parula; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped, piston \pi/2 on latter']);set(gca,'FontSize',font_size);
-nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap parula; colorbar; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);
-nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap parula; colorbar; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);
-% exportgraphics(gcf,'figures\inputs_intensities_to_DBFH.png');
+
+ax1 = nexttile; imagesc(log(I1));  axis image ij; colormap gray; colorbar; title(['Tile ',num2str(tile_1_ind),' only']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax1.FontSize = 12;
+
+ax2 = nexttile; imagesc(log(I2));  axis image ij; colormap gray; colorbar; title(['Tile ',num2str(tile_2_ind),' only']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax2.FontSize = 12;
+
+ax3 = nexttile; imagesc(log(I12)); axis image ij; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped (nominal)']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax3.FontSize = 12;
+
+ax4 = nexttile; imagesc(log(I12p));axis image ij; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped, piston \pi/2 on latter']);set(gca,'FontSize',font_size);
+xlim(img_res/12*[-1,1]+img_res/2);
+ylim(img_res/12*[-1,1]+img_res/2);
+ax4.FontSize = 12;
+
+ax5 = nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);
+ax6 = nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);
+
+linkaxes([ax5,ax6]);
+xlim(ax6,img_res/2+4*seg_px*[-1,1]);
+ylim(ax6,img_res/2+4*seg_px*[-1,1]);
 
 
-%% prepare data for DBH (two-tile case)
-% After you generate the four captures (I1,I2,I12,I12p) and you KNOW the commanded tilts:
-dtilt1 = [0 0];  % tile 1 unchanged
-dtilt2 = [segments12.tilt_x(tile_2_ind) - segments.tilt_x(tile_2_ind), ...
-    segments12.tilt_y(tile_2_ind) - segments.tilt_y(tile_2_ind)];
-% dtilt2 = nominal_pair_dtilt(segments, tile_1_ind, tile_2_ind); % calc in the unstacked state
+% insets
+scale = 3;
+inset_width = ax1.Position(3)/scale;
+inset_height = ax1.Position(4)/scale;
+inset_offset_x = ax1.Position(3)*(scale-1)/(scale);
+inset_offset_y = ax1.Position(4)*(scale-1)/(scale);
 
-Rpx = segments.meta.seg_flat_diam_px / sqrt(3);
+ax1_inset = axes('Position',[ax1.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I1));  axis image  ij ;
+ax1_inset.FontSize = 7;
+ax1_inset.XTick = 0:500:img_res;
+ax1_inset.XTickLabelRotation = 90;
+ax1_inset.YTick = 0:500:img_res;
 
+ax2_inset = axes('Position',[ax2.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I2));  axis image  ij ;
+ax2_inset.FontSize = 7;
+ax2_inset.XTick = 0:500:img_res;
+ax2_inset.XTickLabelRotation = 90;
+ax2_inset.YTick = 0:500:img_res;
+
+ax3_inset = axes('Position',[ax3.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I12));  axis image  ij ;
+ax3_inset.FontSize = 7;
+ax3_inset.XTick = 0:500:img_res;
+ax3_inset.XTickLabelRotation = 90;
+ax3_inset.YTick = 0:500:img_res;
+
+ax4_inset = axes('Position',[ax4.Position(1:2),0,0]+[inset_offset_x,inset_offset_y,inset_width,inset_height]);
+imagesc(log(I12p));  axis image  ij ;
+ax4_inset.FontSize = 7;
+ax4_inset.XTick = 0:500:img_res;
+ax4_inset.XTickLabelRotation = 90;
+ax4_inset.YTick = 0:500:img_res;
+
+
+exportgraphics(gcf,'figures\inputs_intensities_to_DBFH_2048.png');
 
 %% apply noise
+Rpx = segments.meta.seg_flat_diam_px / sqrt(3);
 
 peak_intensity_vec = 10.^[2:9];
 sim_to_e = peak_intensity_vec ./ max(I12(:)); % scaling factor to move from simulation counts to realistic electron count-per-pixel
@@ -144,7 +174,7 @@ for ind_peak_instenisty = 1:numel(peak_intensity_vec)
     % I12p_noisy = I12p_noisy/norm_factor;
 
     % Build |A|, |B|, S on the *centered* grid, then unshift to DFT layout
-    prep = dbh_prepare_from_four_centered(I1_noisy, I2_noisy, I12_noisy, I12p_noisy, dtilt1, dtilt2, fft_res, Rpx);
+    prep = dbh_prepare_from_four_centered(I1_noisy, I2_noisy, I12_noisy, I12p_noisy, [0 0], [0 0], fft_res, Rpx);
 
     fprintf('max imag(I2_al) / max real(I2_al) = %.3g\n', ...
         max(abs(imag(prep.I2_al(:)))) / max(abs(real(prep.I2_al(:)))));
@@ -181,7 +211,7 @@ for ind_peak_instenisty = 1:numel(peak_intensity_vec)
 % x0 = xR;
     % --- Solve ---
     tic;
-    [xR,flag,relres,iter] = lsqr(Afun, bR, 1e-7, 5e3, [], [], x0);
+    [xR,flag,relres,iter,resvec] = lsqr(Afun, bR, 1e-7, 5e3, [], [], x0);
     solve_time = toc
 %
     % Back to complex unknown on overlap K (phasor of B in frequency domain)
@@ -230,11 +260,12 @@ for ind_peak_instenisty = 1:numel(peak_intensity_vec)
     tilt_error_rms_rads(ind_peak_instenisty) =  2*max_rms(ind_peak_instenisty)*(lambda)/(2*pi)/sqrt(sum(M1(:)))/(seg_flat_diam_m/2);
     defocus_error_rms_m(ind_peak_instenisty) = 4*sqrt(12)*(f0_m/(seg_flat_diam_m/2))^2*(max_rms(ind_peak_instenisty)*(lambda)/(2*pi))/sqrt(sum(M1(:)));
 
+1
 end
 
     % tilt_error_rms_rads =  2*max_rms*(lambda)/(2*pi)/sqrt(sum(M1(:)))/(seg_flat_diam_m/2)
 
-save('data\noisy_DBFH_workspace_2.mat',"-v7.3")
+% save('data\noisy_DBFH_workspace_2.mat',"-v7.3")
 
 
 %% --- noise figure
