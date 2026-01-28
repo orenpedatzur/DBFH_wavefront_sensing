@@ -67,12 +67,12 @@ hex_grid = draw_hex_grid(segments);
 
 figure;
 tiledlayout(3,2,'Padding','tight','TileSpacing','compact');
+nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; colorbar; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);xlim(img_res*[1/4,3/4]);ylim(img_res*[1/4,3/4]);
+nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; colorbar; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);xlim(img_res*[1/4,3/4]);ylim(img_res*[1/4,3/4]);
 nexttile; imagesc(log(I1));  axis image ij off; colormap gray; colorbar; title(['Tile ',num2str(tile_1_ind),' only']);set(gca,'FontSize',font_size);
 nexttile; imagesc(log(I2));  axis image ij off; colormap gray; colorbar; title(['Tile ',num2str(tile_2_ind),' only']);set(gca,'FontSize',font_size);
 nexttile; imagesc(log(I12)); axis image ij off; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped (nominal)']);set(gca,'FontSize',font_size);
 nexttile; imagesc(log(I12p));axis image ij off; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped, piston \pi/2 on latter']);set(gca,'FontSize',font_size);
-nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; colorbar; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);xlim(img_res*[1/4,3/4]);ylim(img_res*[1/4,3/4]);
-nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; colorbar; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);xlim(img_res*[1/4,3/4]);ylim(img_res*[1/4,3/4]);
 
 
 %% solve
@@ -195,7 +195,7 @@ for ind_rep = 1:num_repetitions
         max_rms(ind_peak_instenisty,ind_rep) = max(rms1(ind_peak_instenisty,ind_rep),rms2(ind_peak_instenisty,ind_rep));
         % piston_error_rms_m(ind_peak_instenisty,ind_rep) =  max_rms(ind_peak_instenisty,ind_rep)/sqrt(sum(M1(:))) / (2*pi) * (lambda);
         % tilt_error_rms_rads(ind_peak_instenisty,ind_rep) =  2*max_rms(ind_peak_instenisty,ind_rep)*(lambda)/(2*pi)/sqrt(sum(M1(:)))/(seg_flat_diam_m/2);
-        % defocus_error_rms_m(ind_peak_instenisty,ind_rep) = 4*sqrt(12)*(f0_m/(seg_flat_diam_m/2))^2*(max_rms(ind_peak_instenisty,ind_rep)*(lambda)/(2*pi))/sqrt(sum(M1(:)));
+        % defocus_error_rms_m(ind_peak_instenisty,ind_rep) = 4*sqrt(3)*(f0_m/(seg_flat_diam_m/2))^2*(max_rms(ind_peak_instenisty,ind_rep)*(lambda)/(2*pi))/sqrt(sum(M1(:)));
 
     end
 end
@@ -206,9 +206,11 @@ save('data\noisy_DBFH_workspace_5.mat',"-v7.3")
 
 %% --- noise figure
 
+% max_rms(:,27)=[]; % failure in i=27
+
 piston_error_rms_m =  max_rms/sqrt(sum(M1(:))) / (2*pi) * (lambda);
 tilt_error_rms_rads =  2*max_rms*(lambda)/(2*pi)/sqrt(sum(M1(:)))/(seg_flat_diam_m/2);
-defocus_error_rms_m = 4*sqrt(12)*(f0_m/(seg_flat_diam_m/2))^2*(max_rms*(lambda)/(2*pi))/sqrt(sum(M1(:)));
+defocus_error_rms_m = 4*sqrt(3)*(f0_m/(seg_flat_diam_m/2))^2*(max_rms*(lambda)/(2*pi))/sqrt(sum(M1(:)));
 
 
 max_rms_mean = mean(max_rms,2);
@@ -223,14 +225,21 @@ plot_inds = [1:8];
 figure('Position',[100,100,1000,1000]);
 ax1 = subplot(4,1,1);loglog(peak_intensity_vec(plot_inds),max_rms_mean(plot_inds),'-o','LineWidth',2,'Color',gem(1,:));grid on;
 xlabel('peak intensity [e^{-}]');ylabel('\sigma_{px} RMSE [rad]');ax1.FontSize = 12;ax1.LineWidth = 1.5;ylim([1e-3,1e0]);
+text(0.2,0.8,'(a)','fontsize',30,'Units','centimeters');
+
 ax2 = subplot(4,1,2);loglog(peak_intensity_vec(plot_inds),piston_error_rms_m_mean(plot_inds),'-o','LineWidth',2,'Color',gem(2,:));grid on;
 xlabel('peak intensity [e^{-}]');ylabel('piston RMSE [m]');ax2.FontSize = 12;ax2.LineWidth = 1.5;ylim([1e-12,1e-8]);
+text(0.2,0.8,'(b)','fontsize',30,'Units','centimeters');
+
 ax3 = subplot(4,1,3);loglog(peak_intensity_vec(plot_inds),tilt_error_rms_rads_mean(plot_inds),'-o','LineWidth',2,'Color',gem(3,:));grid on;
 xlabel('peak intensity [e^{-}]');ylabel('tilt x/y RMSE [rad]');ax3.FontSize = 12;ax3.LineWidth = 1.5;ylim([1e-11,1e-8]);
+text(0.2,0.8,'(c)','fontsize',30,'Units','centimeters');
+
 ax4 = subplot(4,1,4);loglog(peak_intensity_vec(plot_inds),defocus_error_rms_ms_mean(plot_inds),'-o','LineWidth',2,'Color',gem(4,:));grid on;
 xlabel('peak intensity [e^{-}]');ylabel('defocus RMSE [m]');ax4.FontSize = 12;ax4.LineWidth = 1.5;ylim([1e-6,1e-2]);
+text(0.2,0.8,'(d)','fontsize',30,'Units','centimeters');
 
-exportgraphics(gcf,'figures\errors_vs_peak_intensity.png');
+% exportgraphics(gcf,'figures\errors_vs_peak_intensity.png');
 
 
 %% --- Figure ---

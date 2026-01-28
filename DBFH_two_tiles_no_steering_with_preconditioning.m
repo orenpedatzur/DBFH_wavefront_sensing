@@ -70,35 +70,42 @@ zoom_factor = 6;
 ftest = figure('Position',[100 100 1000 1100]);
 tiledlayout(3,2,'Padding','tight','TileSpacing','compact');
 
-ax5 = nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);
-ax6 = nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);
-
-linkaxes([ax5,ax6]);
-xlim(ax6,img_res/2+4*seg_px*[-1,1]);
-ylim(ax6,img_res/2+4*seg_px*[-1,1]);
 
 ax1 = nexttile; imagesc(log(I1));  axis image ij; colormap gray; colorbar; title(['Tile ',num2str(tile_1_ind),' only']);set(gca,'FontSize',font_size);
 xlim(img_res/zoom_factor*[-1,1]+img_res/2);
 ylim(img_res/zoom_factor*[-1,1]+img_res/2);
 ax1.FontSize = 12;
+text(0.05,0.9,'(a)','fontsize',24,'Units','normalized');
 
 ax2 = nexttile; imagesc(log(I2));  axis image ij; colormap gray; colorbar; title(['Tile ',num2str(tile_2_ind),' only']);set(gca,'FontSize',font_size);
 xlim(img_res/zoom_factor*[-1,1]+img_res/2);
 ylim(img_res/zoom_factor*[-1,1]+img_res/2);
 ax2.FontSize = 12;
+text(0.05,0.9,'(b)','fontsize',24,'Units','normalized');
 
 ax3 = nexttile; imagesc(log(I12)); axis image ij; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped (nominal)']);set(gca,'FontSize',font_size);
 xlim(img_res/zoom_factor*[-1,1]+img_res/2);
 ylim(img_res/zoom_factor*[-1,1]+img_res/2);
 ax3.FontSize = 12;
+text(0.05,0.9,'(c)','fontsize',24,'Units','normalized');
 
 ax4 = nexttile; imagesc(log(I12p));axis image ij; colormap gray; colorbar; title(['Tiles ',num2str(tile_1_ind),'+',num2str(tile_2_ind),' overlapped, piston \pi/2 on latter']);set(gca,'FontSize',font_size);
 xlim(img_res/zoom_factor*[-1,1]+img_res/2);
 ylim(img_res/zoom_factor*[-1,1]+img_res/2);
 ax4.FontSize = 12;
+text(0.05,0.9,'(d)','fontsize',24,'Units','normalized');
 
 
+ax5 = nexttile; imagesc(M1);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_1_ind)]);set(gca,'FontSize',font_size);
+text(0.05,0.9,'(e)','fontsize',24,'Units','normalized','color','w');
 
+ax6 = nexttile; imagesc(M2);hold on;imagesc(hex_grid,'AlphaData',0.3);axis image ij off; colormap gray; title(['CS tile ',num2str(tile_2_ind)]);set(gca,'FontSize',font_size);
+text(0.05,0.9,'(f)','fontsize',24,'Units','normalized','color','w');
+
+
+linkaxes([ax5,ax6]);
+xlim(ax6,img_res/2+4*seg_px*[-1,1]);
+ylim(ax6,img_res/2+4*seg_px*[-1,1]);
 
 % insets
 scale = 3;
@@ -136,7 +143,8 @@ ax4_inset.XTickLabelRotation = 90;
 ax4_inset.YTick = 0:500:img_res;
 
 
-exportgraphics(gcf,'figures\inputs_intensities_to_DBFH_two_tiles_2048_noiseless.png');
+% exportgraphics(gcf,'figures\inputs_intensities_to_DBFH_two_tiles_2048_noiseless.png');
+% exportgraphics(gcf,'figures\inputs_intensities_to_DBFH_two_tiles_2048_noiseless_mask_in_bottom.png');
 
 %% prepare data for DBH (two-tile case)
 Rpx = segments.meta.seg_flat_diam_px / sqrt(3);
@@ -268,7 +276,7 @@ nan_mask_tile2(nan_mask_tile2==0) = nan;
 cl1 = [-pi pi];
 cl2 = 1e-9*[-1 1];
 
-font_size = 16;
+font_size = 20;
 
 global_phase1 = mean(d1.*nan_mask_tile1,'all',"omitnan");
 global_phase2 = mean(d2.*nan_mask_tile2,'all',"omitnan");
@@ -279,21 +287,27 @@ tiledlayout(2,3, "TileSpacing", "compact", "Padding", "tight"); % Adjust TileSpa
 
 ax1 = nexttile; imagesc(phi1_0.*nan_mask_tile1);  axis image ij off; clim(cl1); cbar = colorbar; colormap(parula_with_nan_white);
 title('Tile 3 – original');set(gca,'FontSize',font_size);cbar.Label.String = '[rad]';
+text(0.05,0.9,'(a)','fontsize',40,'Units','normalized');
 
 ax2 = nexttile; imagesc(phi1r_0.*nan_mask_tile1); axis image ij off; clim(cl1); cbar = colorbar;
 title('Tile 3 – recovered');set(gca,'FontSize',font_size);cbar.Label.String = '[rad]';
+text(0.05,0.9,'(c)','fontsize',40,'Units','normalized');
 
 ax3 = nexttile; imagesc(d1.*nan_mask_tile1);      axis image ij off;clim(cl2);cbar = colorbar;
 title(sprintf('Tile 3 – diff (RMS=%.3g)',rms1));set(gca,'FontSize',font_size);cbar.Label.String = '[rad]';
+text(0.05,0.9,'(e)','fontsize',40,'Units','normalized');
 
 ax4 = nexttile; imagesc(phi2_0.*nan_mask_tile2);  axis image ij off; clim(cl1); cbar = colorbar;
 title('Tile 8 – original');set(gca,'FontSize',font_size);cbar.Label.String = '[rad]';
+text(0.05,0.9,'(b)','fontsize',40,'Units','normalized');
 
 ax5 = nexttile; imagesc(phi2r_0.*nan_mask_tile2); axis image ij off; clim(cl1); cbar = colorbar;
 title('Tile 8 – recovered');set(gca,'FontSize',font_size);cbar.Label.String = '[rad]';
+text(0.05,0.9,'(d)','fontsize',40,'Units','normalized');
 
 ax6 = nexttile; imagesc(d2.*nan_mask_tile2);      axis image ij off; clim(cl2);cbar = colorbar;
 title(sprintf('Tile 8 – diff (RMS=%.3g)',rms2));set(gca,'FontSize',font_size);cbar.Label.String = '[rad]';
+text(0.05,0.9,'(f)','fontsize',40,'Units','normalized');
 
 
 linkaxes([ax1,ax2,ax3]);set(ax1,"xlim",xc_tile1+0.6*range_x*[-1,1],"ylim",yc_tile1+0.6*range_y*[-1,1]);
@@ -302,7 +316,7 @@ linkaxes([ax4,ax5,ax6]);set(ax4,"xlim",xc_tile2+0.6*range_x*[-1,1],"ylim",yc_til
 exportgraphics(gcf,'figures\DBFH_tiles_3_8_noisless_2048.png');
 
 % save('data\noisy_DBFH_workspace.mat',"-v7.3")
-
+% load('data\noisy_DBFH_workspace.mat',"-v7.3")
 % figure;histogram(d1(M1),linspace(-pi,pi,301));hold on;histogram(d2(M2),linspace(-pi,pi,301));title('error histogram');grid on;
 %%
 %% --- end scripts ---
