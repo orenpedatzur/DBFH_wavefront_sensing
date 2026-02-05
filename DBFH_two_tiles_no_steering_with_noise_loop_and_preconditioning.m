@@ -200,13 +200,14 @@ for ind_rep = 1:num_repetitions
     end
 end
 
-save('data\noisy_DBFH_workspace_5.mat',"-v7.3")
+% save('data\noisy_DBFH_workspace_5.mat',"-v7.3")
 % load('data\noisy_DBFH_workspace_5.mat')
 
 
 %% --- noise figure
 
 % max_rms(:,27)=[]; % failure in i=27
+font_size = 16;
 
 piston_error_rms_m =  max_rms/sqrt(sum(M1(:))) / (2*pi) * (lambda);
 tilt_error_rms_rads =  2*max_rms*(lambda)/(2*pi)/sqrt(sum(M1(:)))/(seg_flat_diam_m/2);
@@ -224,22 +225,22 @@ plot_inds = [1:8];
 
 figure('Position',[100,100,1000,1000]);
 ax1 = subplot(4,1,1);loglog(peak_intensity_vec(plot_inds),max_rms_mean(plot_inds),'-o','LineWidth',2,'Color',gem(1,:));grid on;
-xlabel('peak intensity [e^{-}]');ylabel('\sigma_{px} RMSE [rad]');ax1.FontSize = 12;ax1.LineWidth = 1.5;ylim([1e-3,1e0]);
-text(0.2,0.8,'(a)','fontsize',30,'Units','centimeters');
+xlabel('peak intensity [e^{-}]');ylabel('\sigma_{px} RMSE [rad]');ax1.FontSize = font_size;ax1.LineWidth = 1.5;ylim([1e-3,1e0]);xlim([1e3,1e10]);
+text(0.2,0.8,'(a)','fontsize',30,'Units','centimeters');ax1.XTick = peak_intensity_vec;
 
 ax2 = subplot(4,1,2);loglog(peak_intensity_vec(plot_inds),piston_error_rms_m_mean(plot_inds),'-o','LineWidth',2,'Color',gem(2,:));grid on;
-xlabel('peak intensity [e^{-}]');ylabel('piston RMSE [m]');ax2.FontSize = 12;ax2.LineWidth = 1.5;ylim([1e-12,1e-8]);
-text(0.2,0.8,'(b)','fontsize',30,'Units','centimeters');
+xlabel('peak intensity [e^{-}]');ylabel('piston RMSE [m]');ax2.FontSize = font_size;ax2.LineWidth = 1.5;ylim([1e-12,1e-8]);xlim([1e3,1e10]);
+text(0.2,0.8,'(b)','fontsize',30,'Units','centimeters');ax2.XTick = peak_intensity_vec;
 
 ax3 = subplot(4,1,3);loglog(peak_intensity_vec(plot_inds),tilt_error_rms_rads_mean(plot_inds),'-o','LineWidth',2,'Color',gem(3,:));grid on;
-xlabel('peak intensity [e^{-}]');ylabel('tilt x/y RMSE [rad]');ax3.FontSize = 12;ax3.LineWidth = 1.5;ylim([1e-11,1e-8]);
-text(0.2,0.8,'(c)','fontsize',30,'Units','centimeters');
+xlabel('peak intensity [e^{-}]');ylabel('tilt x/y RMSE [rad]');ax3.FontSize = font_size;ax3.LineWidth = 1.5;ylim([1e-11,1e-8]);xlim([1e3,1e10]);
+text(0.2,0.8,'(c)','fontsize',30,'Units','centimeters');ax3.XTick = peak_intensity_vec;
 
 ax4 = subplot(4,1,4);loglog(peak_intensity_vec(plot_inds),defocus_error_rms_ms_mean(plot_inds),'-o','LineWidth',2,'Color',gem(4,:));grid on;
-xlabel('peak intensity [e^{-}]');ylabel('defocus RMSE [m]');ax4.FontSize = 12;ax4.LineWidth = 1.5;ylim([1e-6,1e-2]);
-text(0.2,0.8,'(d)','fontsize',30,'Units','centimeters');
+xlabel('peak intensity [e^{-}]');ylabel('defocus RMSE [m]');ax4.FontSize = font_size;ax4.LineWidth = 1.5;ylim([1e-6,1e-2]);xlim([1e3,1e10]);
+text(0.2,0.8,'(d)','fontsize',30,'Units','centimeters');ax4.XTick = peak_intensity_vec;
 
-% exportgraphics(gcf,'figures\errors_vs_peak_intensity.png');
+exportgraphics(gcf,'figures\errors_vs_peak_intensity.png');
 
 
 %% --- Figure ---
